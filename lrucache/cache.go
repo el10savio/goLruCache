@@ -1,6 +1,8 @@
 package lrucache
 
-import "errors"
+import (
+	"errors"
+)
 
 // In an LRU Cache we specify the capacity of the cache
 // It consists of a HashMap with an integer key
@@ -64,6 +66,7 @@ func (cache *Cache) Set(key string, value interface{}) {
 	if len(cache.HashMap) > cache.Capacity {
 		cache.removeNode(cache.lastNode.Key)
 	}
+
 }
 
 // pushToHead() adds the given node to the
@@ -120,6 +123,8 @@ func (cache *Cache) removeNode(key string) {
 		// the given node
 		if node.nextNode != nil {
 			(node.nextNode).previousNode = node.previousNode
+		} else {
+			cache.lastNode = node.previousNode
 		}
 
 		// Remove the node from the HashMap

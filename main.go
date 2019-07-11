@@ -31,9 +31,9 @@ func main() {
 	fmt.Println("")
 
 	// Get data from the cache
-	cache.Get("3")
+	cache.Get("0")
 	fmt.Println("Cache:", cache)
-	cache.Get("4")
+	cache.Get("1")
 	fmt.Println("Cache:", cache)
 	fmt.Println("")
 
