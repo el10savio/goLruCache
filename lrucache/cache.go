@@ -132,6 +132,17 @@ func (cache *Cache) removeNode(key string) {
 	}
 }
 
+// Clear() removes all nodes from the cache
+// Need to optimize further
+func (cache *Cache) Clear() {
+	// Iterate through all nodes
+	for key, _ := range cache.HashMap {
+		cache.removeNode(key)
+	}
+	cache.firstNode = nil
+	cache.lastNode = nil
+}
+
 // LRUCache creates a new empty LRUCache
 func LRUCache(capacity int) (*Cache, error) {
 	// Validate the capacity

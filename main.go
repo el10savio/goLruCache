@@ -57,4 +57,9 @@ func main() {
 	fmt.Println("Cache:", cache)
 	fmt.Println("")
 
+	// Clear the cache
+	cache.Clear()
+	fmt.Println("Cache:", cache)
+	fmt.Println("")
+
 }
