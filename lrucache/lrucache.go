@@ -131,12 +131,8 @@ func (cache *Cache) removeNode(key string) {
 }
 
 // Clear removes all nodes from the cache
-// Need to optimize further
 func (cache *Cache) Clear() {
-	// Iterate through all nodes
-	for key := range cache.HashMap {
-		cache.removeNode(key)
-	}
+	cache.HashMap = make(map[string]*CacheNode, cache.Capacity)
 	cache.firstNode = nil
 	cache.lastNode = nil
 }
@@ -147,7 +143,7 @@ func LRUCache(capacity int) (*Cache, error) {
 	if capacity > 0 {
 		cache := &Cache{
 			Capacity:  capacity,
-			HashMap:   make(map[string]*CacheNode),
+			HashMap:   make(map[string]*CacheNode, capacity),
 			firstNode: nil,
 			lastNode:  nil,
 		}
