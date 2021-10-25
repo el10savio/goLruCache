@@ -84,8 +84,8 @@ func (cache *Cache) Set(key string, value interface{}) {
 }
 
 // getHead ...
-func (cache *Cache) getHeadValue() interface{} {
-	return cache.firstNode.Value
+func (cache *Cache) getHead() *CacheNode {
+	return cache.firstNode
 }
 
 // pushToHead() adds the given node to the

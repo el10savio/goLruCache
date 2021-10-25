@@ -56,12 +56,12 @@ var testGetTestSuite = []struct {
 	key           string
 	expectedValue interface{}
 }{
-	{"BasicFuntionality", fillCache(3, []insertTuple{{"a", 1}, {"b", 2}, {"c", 3}}), "b", 2},
-	{"DuplicateElements", fillCache(1, []insertTuple{{"a", 1}, {"a", 1}, {"a", 1}}), "a", 1},
-	{"RewrittenElements", fillCache(1, []insertTuple{{"a", 1}, {"a", 2}, {"a", 3}}), "a", 3},
-	{"ElementNotPresent", fillCache(3, []insertTuple{{"a", 1}, {"b", 2}, {"c", 3}}), "z", nil},
-	{"SingleElement", fillCache(1, []insertTuple{{"a", 1}}), "a", 1},
-	{"EmptyCache", fillCache(3, []insertTuple{}), "b", nil},
+	{"BasicFuntionality", fillCache(3, []tuple{{"a", 1}, {"b", 2}, {"c", 3}}), "b", 2},
+	{"DuplicateElements", fillCache(1, []tuple{{"a", 1}, {"a", 1}, {"a", 1}}), "a", 1},
+	{"RewrittenElements", fillCache(1, []tuple{{"a", 1}, {"a", 2}, {"a", 3}}), "a", 3},
+	{"ElementNotPresent", fillCache(3, []tuple{{"a", 1}, {"b", 2}, {"c", 3}}), "z", nil},
+	{"SingleElement", fillCache(1, []tuple{{"a", 1}}), "a", 1},
+	{"EmptyCache", fillCache(3, []tuple{}), "b", nil},
 }
 
 func TestGet(t *testing.T) {
@@ -80,6 +80,34 @@ func TestGet(t *testing.T) {
 	}
 }
 
+var testSetTestSuite = []struct {
+	name          string
+	baseCache     *Cache
+	expectedTuple tuple
+}{
+	{"SingleElement", fillCache(1, []tuple{{"a", 1}}), tuple{"a", 1}},
+	{"BasicFunctionality", fillCache(3, []tuple{{"a", 1}, {"b", 2}, {"c", 3}}), tuple{"c", 3}},
+	{"OverwriteElements", fillCache(3, []tuple{{"a", 1}, {"b", 2}, {"a", 3}}), tuple{"a", 3}},
+	{"DuplicateElements", fillCache(1, []tuple{{"a", 1}, {"a", 1}, {"a", 1}}), tuple{"a", 1}},
+}
+
+func TestSet(t *testing.T) {
+	for _, testCase := range testSetTestSuite {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			// t.Parallel()
+
+			cache := testCase.baseCache
+			defer clearCaches([]*Cache{cache})
+
+			actualHead := cache.getHead()
+
+			assert.Equal(t, testCase.expectedTuple.Key, actualHead.Key)
+			assert.Equal(t, testCase.expectedTuple.Value, actualHead.Value)
+		})
+	}
+}
+
 func createCache(capacity int) *Cache {
 	if capacity == 0 {
 		return nil
@@ -93,12 +121,12 @@ func createCache(capacity int) *Cache {
 	}
 }
 
-type insertTuple struct {
+type tuple struct {
 	Key   string
 	Value interface{}
 }
 
-func fillCache(capacity int, elements []insertTuple) *Cache {
+func fillCache(capacity int, elements []tuple) *Cache {
 	cache := createCache(capacity)
 	if cache == nil {
 		return nil
