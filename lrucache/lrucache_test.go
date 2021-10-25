@@ -2,50 +2,10 @@ package lrucache
 
 import (
 	"errors"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
-
-func TestLRUCache(t *testing.T) {
-	capacity := 1
-
-	expectedCache := &Cache{
-		Capacity:  1,
-		HashMap:   make(map[string]*CacheNode, 1),
-		firstNode: nil,
-		lastNode:  nil,
-	}
-
-	var expectedError error
-
-	actualCache, actualError := LRUCache(capacity)
-
-	if !reflect.DeepEqual(expectedError, actualError) {
-		t.Fatalf("\nExpected: %v \nGot: %v", expectedError, actualError)
-	}
-
-	if !reflect.DeepEqual(expectedCache, actualCache) {
-		t.Fatalf("\nExpected: %v \nGot: %v", expectedCache, actualCache)
-	}
-}
-
-func TestLRUCache_NoCapacity(t *testing.T) {
-	capacity := 0
-
-	var expectedCache *Cache
-
-	expectedError := errors.New("capacity must be greater than zero")
-
-	actualCache, actualError := LRUCache(capacity)
-
-	if !reflect.DeepEqual(expectedError, actualError) {
-		t.Fatalf("\nExpected: %v \nGot: %v", expectedError, actualError)
-	}
-
-	if !reflect.DeepEqual(expectedCache, actualCache) {
-		t.Fatalf("\nExpected: %v \nGot: %v", expectedCache, actualCache)
-	}
-}
 
 func TestClear(t *testing.T) {
 	cache, err := LRUCache(2)
@@ -66,7 +26,36 @@ func TestClear(t *testing.T) {
 
 	actualCache := cache
 
-	if !reflect.DeepEqual(expectedCache, actualCache) {
-		t.Fatalf("\nExpected: %v \nGot: %v", expectedCache, actualCache)
+	assert.Equal(t, expectedCache, actualCache)
+}
+
+func TestLRUCache(t *testing.T) {
+	capacity := 1
+
+	expectedCache := &Cache{
+		Capacity:  1,
+		HashMap:   make(map[string]*CacheNode, 1),
+		firstNode: nil,
+		lastNode:  nil,
 	}
+
+	var expectedError error
+
+	actualCache, actualError := LRUCache(capacity)
+
+	assert.Equal(t, expectedError, actualError)
+	assert.Equal(t, expectedCache, actualCache)
+}
+
+func TestLRUCache_NoCapacity(t *testing.T) {
+	capacity := 0
+
+	var expectedCache *Cache
+
+	expectedError := errors.New("capacity must be greater than zero")
+
+	actualCache, actualError := LRUCache(capacity)
+
+	assert.Equal(t, expectedError, actualError)
+	assert.Equal(t, expectedCache, actualCache)
 }
