@@ -83,6 +83,11 @@ func (cache *Cache) Set(key string, value interface{}) {
 	}
 }
 
+// getHead ...
+func (cache *Cache) getHeadValue() interface{} {
+	return cache.firstNode.Value
+}
+
 // pushToHead() adds the given node to the
 // cache. Then, it checks if the capacity
 // is more than specificed and if so
