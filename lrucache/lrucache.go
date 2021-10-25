@@ -9,12 +9,10 @@ import (
 // corresponding to a particular cache node
 // Also the first & last nodes are available
 type Cache struct {
-	Capacity int
-	HashMap  map[string]*CacheNode
-
+	Capacity  int
+	HashMap   map[string]*CacheNode
 	firstNode *CacheNode
 	lastNode  *CacheNode
-
 	CacheFunctions
 }
 
@@ -24,9 +22,8 @@ type Cache struct {
 // we also store the previous & next
 // cache nodes
 type CacheNode struct {
-	Key   string
-	Value interface{}
-
+	Key          string
+	Value        interface{}
 	previousNode *CacheNode
 	nextNode     *CacheNode
 }
@@ -39,18 +36,37 @@ type CacheFunctions interface {
 	Set(key string, value interface{})
 }
 
+// LRUCache creates a new empty LRUCache
+func LRUCache(capacity int) (*Cache, error) {
+	// Validate the capacity
+	if capacity == 0 {
+		return nil, errors.New("capacity must be greater than zero")
+	}
+
+	cache := &Cache{
+		Capacity:  capacity,
+		HashMap:   make(map[string]*CacheNode, capacity),
+		firstNode: nil,
+		lastNode:  nil,
+	}
+
+	return cache, nil
+}
+
 // Get first checks if the key is present
 // in the map and then returns it.
 // In doing so we have used this node
 // and thus push it to the first node
 func (cache *Cache) Get(key string) interface{} {
 	node := cache.HashMap[key]
-	if node != nil {
-		cache.removeNode(key)
-		cache.pushToHead(key, node.Value)
-		return node.Value
+	if node == nil {
+		return nil
 	}
-	return nil
+
+	cache.removeNode(key)
+	cache.pushToHead(key, node.Value)
+
+	return node.Value
 }
 
 // Set first removes any node with the
@@ -65,7 +81,6 @@ func (cache *Cache) Set(key string, value interface{}) {
 	if len(cache.HashMap) > cache.Capacity {
 		cache.removeNode(cache.lastNode.Key)
 	}
-
 }
 
 // pushToHead() adds the given node to the
@@ -109,25 +124,26 @@ func (cache *Cache) pushToHead(key string, value interface{}) {
 func (cache *Cache) removeNode(key string) {
 	// Check if node exists
 	node := cache.HashMap[key]
-	if node != nil {
-		// If there is a node behind
-		// the given node
-		if node.previousNode != nil {
-			(node.previousNode).nextNode = node.nextNode
-		}
-
-		// If there is a node after
-		// the given node
-		if node.nextNode != nil {
-			(node.nextNode).previousNode = node.previousNode
-		} else {
-			cache.lastNode = node.previousNode
-		}
-
-		// Remove the node from the HashMap
-		delete(cache.HashMap, key)
+	if node == nil {
+		return
 	}
-	return
+
+	// If there is a node behind
+	// the given node
+	if node.previousNode != nil {
+		(node.previousNode).nextNode = node.nextNode
+	}
+
+	// If there is a node after
+	// the given node
+	if node.nextNode != nil {
+		(node.nextNode).previousNode = node.previousNode
+	} else {
+		cache.lastNode = node.previousNode
+	}
+
+	// Remove the node from the HashMap
+	delete(cache.HashMap, key)
 }
 
 // Clear removes all nodes from the cache
@@ -135,19 +151,4 @@ func (cache *Cache) Clear() {
 	cache.HashMap = make(map[string]*CacheNode, cache.Capacity)
 	cache.firstNode = nil
 	cache.lastNode = nil
-}
-
-// LRUCache creates a new empty LRUCache
-func LRUCache(capacity int) (*Cache, error) {
-	// Validate the capacity
-	if capacity > 0 {
-		cache := &Cache{
-			Capacity:  capacity,
-			HashMap:   make(map[string]*CacheNode, capacity),
-			firstNode: nil,
-			lastNode:  nil,
-		}
-		return cache, nil
-	}
-	return nil, errors.New("capacity must be greater than zero")
 }
